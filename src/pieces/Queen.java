@@ -9,6 +9,9 @@ public class Queen extends Piece {
 
     @Override
     public boolean canMove(int sourceX, int sourceY, int targetX, int targetY) {
+        if(Moves.isQuuenMove(sourceX, sourceY, targetX, targetY)){
+            return true;
+        }
         return false;
     }
 }

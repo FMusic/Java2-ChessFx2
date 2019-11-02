@@ -73,15 +73,79 @@ public class ChessBoard {
         }
     }
 
-    public boolean movePiece(Color pieceColor, int sourceX, int sourceY, int targetX, int targetY){
+    public void movePiece(Color pieceColor, int sourceX, int sourceY, int targetX, int targetY) throws GameException {
         Piece piece = boxes[sourceX][sourceY].getPiece();
         if(piece.canMove(sourceX, sourceY, targetX, targetY)){
-            if(boxes[sourceX][sourceY].getPiece()!=null){
-                removePiece(targetX, targetY);
+            if(boxesFromToAreEmpty(sourceX, sourceY, targetX, targetY)) {
+                if (boxes[sourceX][sourceY].getPiece() != null) {
+                    removePiece(targetX, targetY);
+                }
+                boxes[targetX][targetY].setPiece(piece);
+                removePiece(sourceX, sourceY);
+                checkForCheck();
+                return;
             }
-            boxes[targetX][targetY].setPiece(piece);
-            removePiece(sourceX, sourceY);
-            checkForCheck();
+        }
+        throw new GameException("Invalid move");
+    }
+
+    private boolean boxesFromToAreEmpty(int fromX, int fromY, int toX, int toY) {
+        //only on Y axis
+        if ((fromY - toY) == 0){
+            for(int i=fromX+1;i<toX;i++){
+                if(!isBoxEmpty(i, fromY)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        //only on X axis
+        if ((fromX - toX) == 0 ){
+            for(int i=fromY+1;i<toY;i++){
+                if(!isBoxEmpty(fromX, i)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        //diagonal move
+        int dX = Math.abs(toX - fromX);
+        int dY = Math.abs(toY - fromY);
+        if(dX == dY){
+            if (fromX < toX){
+                for(int i=fromX+1;i<toX;i++){
+                    if (checkY(fromY, toY, i)) return false;
+                }
+            }
+            else{
+                for(int i=fromX -1;i>toX;i--){
+                    if(checkY(fromY, toY, i)) return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkY(int fromY, int toY, int i) {
+        if (fromY < toY){
+            for(int j=fromY+1; j<toY;j++){
+                if (!isBoxEmpty(i,j)){
+                    return true;
+                }
+            }
+        }else{
+            for (int j =fromY-1;j>toY;j--){
+                if(!isBoxEmpty(i, j)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isBoxEmpty(int x, int y) {
+        if (boxes[x][y].getPiece() == null){
             return true;
         }
         return false;
