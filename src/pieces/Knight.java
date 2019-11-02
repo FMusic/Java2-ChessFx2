@@ -9,6 +9,14 @@ public class Knight extends Piece {
 
     @Override
     public boolean canMove(int sourceX, int sourceY, int targetX, int targetY) {
-
+        int dx = Math.abs(targetX - sourceX);
+        int dy = Math.abs(targetY - sourceY);
+        if (dx == 2){
+            return dy == 1;
+        }
+        if (dx ==1){
+            return dy == 2;
+        }
+        return false;
     }
 }

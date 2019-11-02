@@ -6,7 +6,7 @@ import model.PathTrace;
 public abstract class Piece {
     private Color pieceColor;
 
-    public Piece(Color color) {
+    Piece(Color color) {
         pieceColor = color;
     }
 
@@ -15,7 +15,6 @@ public abstract class Piece {
     }
 
     public PathTrace tracePaths(int sourceX, int sourceY, int targetX, int targetY){
-
         return new PathTrace();
     }
 
