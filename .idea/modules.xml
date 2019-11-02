@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ChessJava3.iml" filepath="$PROJECT_DIR$/ChessJava3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ChessJava.iml" filepath="$PROJECT_DIR$/ChessJava.iml" />
     </modules>
   </component>
 </project>
