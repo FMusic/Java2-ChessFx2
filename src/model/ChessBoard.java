@@ -7,6 +7,11 @@ import java.util.List;
 public class ChessBoard {
     private Box[][] boxes = new Box[8][8];
     private List<Piece> removedPieces;
+    private boolean isCheck;
+    private int wKingPosX;
+    private int wKingPosY;
+    private int bKingPosX;
+    private int bKingPosY;
 
     public Box[][] getBoxes() {
         return boxes;
@@ -50,6 +55,8 @@ public class ChessBoard {
                 }
                 if(i==5 && j==1){
                     boxes[i][j].setPiece(new King(Color.WHITE));
+                    wKingPosX = i;
+                    wKingPosY = j;
                 }
                 if(j==2){
                     boxes[i][j].setPiece(new Pawn(Color.WHITE));
@@ -68,6 +75,8 @@ public class ChessBoard {
                 }
                 if(i==5 && j==8){
                     boxes[i][j].setPiece(new King(Color.BLACK));
+                    bKingPosX = i;
+                    bKingPosY = j;
                 }
             }
         }
@@ -75,6 +84,17 @@ public class ChessBoard {
 
     public void movePiece(Color pieceColor, int sourceX, int sourceY, int targetX, int targetY) throws GameException {
         Piece piece = boxes[sourceX][sourceY].getPiece();
+        if (!isCheck){
+            if (movePiece(sourceX, sourceY, targetX, targetY, piece)) return;
+        }else{
+            if (piece instanceof King){
+                if (movePiece(sourceX, sourceY, targetX, targetY, piece)) return;
+            }
+        }
+        throw new GameException("Invalid move");
+    }
+
+    private boolean movePiece(int sourceX, int sourceY, int targetX, int targetY, Piece piece) {
         if(piece.canMove(sourceX, sourceY, targetX, targetY)){
             if(boxesFromToAreEmpty(sourceX, sourceY, targetX, targetY)) {
                 if (boxes[sourceX][sourceY].getPiece() != null) {
@@ -83,17 +103,17 @@ public class ChessBoard {
                 boxes[targetX][targetY].setPiece(piece);
                 removePiece(sourceX, sourceY);
                 checkForCheck();
-                return;
+                return true;
             }
         }
-        throw new GameException("Invalid move");
+        return false;
     }
 
     private boolean boxesFromToAreEmpty(int fromX, int fromY, int toX, int toY) {
         //only on Y axis
         if ((fromY - toY) == 0){
             for(int i=fromX+1;i<toX;i++){
-                if(!isBoxEmpty(i, fromY)){
+                if(isBoxFull(i, fromY)){
                     return false;
                 }
             }
@@ -102,7 +122,7 @@ public class ChessBoard {
         //only on X axis
         if ((fromX - toX) == 0 ){
             for(int i=fromY+1;i<toY;i++){
-                if(!isBoxEmpty(fromX, i)){
+                if(isBoxFull(fromX, i)){
                     return false;
                 }
             }
@@ -130,13 +150,13 @@ public class ChessBoard {
     private boolean checkY(int fromY, int toY, int i) {
         if (fromY < toY){
             for(int j=fromY+1; j<toY;j++){
-                if (!isBoxEmpty(i,j)){
+                if (isBoxFull(i, j)){
                     return true;
                 }
             }
         }else{
             for (int j =fromY-1;j>toY;j--){
-                if(!isBoxEmpty(i, j)){
+                if(isBoxFull(i, j)){
                     return true;
                 }
             }
@@ -144,18 +164,21 @@ public class ChessBoard {
         return false;
     }
 
-    private boolean isBoxEmpty(int x, int y) {
-        if (boxes[x][y].getPiece() == null){
-            return true;
-        }
-        return false;
+    private boolean isBoxFull(int x, int y) {
+        return boxes[x][y].getPiece() != null;
     }
 
-    public boolean checkForCheck(){
-        return false;
+    private void checkForCheck(){
+        checkAroundKing(wKingPosX, wKingPosY, Color.WHITE);
+        checkAroundKing(bKingPosX, bKingPosY, Color.BLACK);
     }
 
-    public void removePiece(int sourceX, int sourceY){
+    private void checkAroundKing(int kingX, int kingY, Color color) {
+        //todo implement check
+        //it must check for each figure in opposite color if it can attack king
+    }
+
+    private void removePiece(int sourceX, int sourceY){
         removedPieces.add(boxes[sourceX][sourceY].getPiece());
         boxes[sourceX][sourceY].setPiece(null);
     }
